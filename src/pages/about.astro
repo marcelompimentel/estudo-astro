@@ -1,20 +1,52 @@
 ---
+const pageTitle = "Sobre mim";
 
+const identify = {
+    firstName: "Sarah",
+    country: "Canada",
+    occupation: "Escritora Técnica",
+    hobbies: ["fotografia", "observar pássaros", "beisebol"],
+};
+
+const skills = ["HTML", "CSS", "Javascript", "React", "Astro", "Escrever documentação"];
+
+const happy = true;
+const finished = false;
+const goal = 3;
 ---
-
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
+<html lang="pt-BR">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>{pageTitle}</title>
+    </head>
+    <body>
         <a href="/">Início</a>
-		<a href="/about/">Sobre</a>
-		<a href="/blog/">Blog</a>
-		<h1>About</h1>
-	</body>
+        <a href="/about/">Sobre</a>
+        <a href="/blog/">Blog</a>
+        <h1>{pageTitle}</h1>
+        <h2>... e meu novo site Astro!</h2>
+
+        <p>Estou resolvendo o tutorial introdutório do Astro. Esta é a segunda página no meu website, e é a primeira que eu mesmo construí!</p>
+
+        <p>Este site será atualizado enquanto eu completo mais desse tutorial, então continue verificando e veja como minha jornada está indo!</p>
+
+        <p>Aqui estão alguns fatos sobre mim:</p>
+        <ul>
+            <li>Meu nome é {identify.firstName}.</li>
+            <li>Eu moro no {identify.country} e eu trabalho como uma {identify.occupation}.</li>
+            {identify.hobbies.length >= 2 &&
+                <li>Dois dos meus hobbies são: {identify.hobbies[0]} e {identify.hobbies[1]}.</li>
+            }
+        </ul>
+
+        <p>Minhas habilidades são:</p>
+        <ul>
+            {skills.map((skill) => <li>{skill}</li>)}
+        </ul>
+
+        {happy && <p>Estou feliz em estar apredendo Astro!</p>}
+        {finished && <p>Eu terminei este tutorial!</p>}
+        {goal === 3 ? <p>Minha meta é terminar em 3 dias.</p> : <p>Minha meta não é em 3 dias.</p>}
+  </body>
 </html>
