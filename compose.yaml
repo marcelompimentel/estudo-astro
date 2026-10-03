@@ -1,0 +1,26 @@
+services:
+  astro:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    ports:
+      - "4321:4321"
+
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          initial_sync: true
+          ignore:
+            - node_modules/
+            - .git/
+            - dist/
+            - .astro/
+
+        - action: rebuild
+          path: package.json
+
+        - action: rebuild
+          path: package-lock.json
