@@ -1,0 +1,22 @@
+---
+import { obterOlhar } from "../../lib/olhares"
+import FormularioPergunta from "../../components/FormularioPergunta.astro"
+
+const olhar = await obterOlhar('estudantes')
+---
+
+<html lang="pt-BR">
+    <head>
+        <meta charset="utf-8" />
+        <title>Estudantes</title>
+    </head>
+    <body>
+        <main>
+            <h1>{olhar.descricao}</h1>
+            <section>
+                <h2>Contribuia com uma questão</h2>
+                <FormularioPergunta olharCodigo="estudantes" />
+            </section>
+        </main>
+    </body>
+</html>

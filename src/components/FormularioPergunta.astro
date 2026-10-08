@@ -1,12 +1,16 @@
 ---
+import { obterOlhar } from '../lib/olhares'
 interface Props {
     olharCodigo: string
 }
 
 const { olharCodigo } = Astro.props
+
+const olhar = await obterOlhar(olharCodigo)
+const olharId = olhar.id
 ---
 
-<form id="pergunta-form" data-olhar-codigo={olharCodigo} novalidate>
+<form id="pergunta-form" data-olhar-codigo={olharCodigo} data-olhar-id={olharId} novalidate>
     <div>
         <label for="pergunta">Sua questão</label>
         <textarea
@@ -37,11 +41,7 @@ const { olharCodigo } = Astro.props
     const contador = document.querySelector<HTMLElement>('#contador')
 
     if(form && textarea && button && mensagem && contador) {
-        const olharCodigo = form.dataset.olharCodigo
-
-        if (!olharCodigo) {
-            console.error('Código do olhar não informado.')
-        }
+        const olharId = Number(form.dataset.olharId)
 
         const atualizarContador = () => {
             contador.textContent = `${textarea.value.length} / 1000`
@@ -58,17 +58,20 @@ const { olharCodigo } = Astro.props
         form.addEventListener('submit', async (event) => {
             event.preventDefault()
 
-            if (!olharCodigo) {
+            const descricao = textarea.value.trim()
+
+            if (!Number.isInteger(olharId) || olharId <= 0) {
+                console.error('olharId inválido:', form.dataset.olharId)
                 mostrarMensagem('Não foi possível identificar a seção', 'erro')
                 return
             }
 
-            const descricao = textarea.value.trim()
             if (descricao.length < 10) {
                 mostrarMensagem('Escreva uma questão com pelo menos 10 caracteres', 'erro')
                 textarea.focus()
                 return
             }
+
             if (descricao.length > 1000) {
                 mostrarMensagem('A questão deve ter no máximo 1000 caracteres.', 'erro')
                 textarea.focus()
@@ -80,31 +83,15 @@ const { olharCodigo } = Astro.props
             mensagem.hidden = true
 
             try {
-                // obter ID do olhar através do seu código público
-                const { data: olhar, error: olharError } = await supabase
-                    .from('olhar')
-                    .select('id')
-                    .eq('codigo', olharCodigo)
-                    .eq('ativo', true)
-                    .single()
-
-                if (olharError || !olhar) {
-                    console.error(olharError)
-                    throw new Error(
-                        'Não foi possível identificar esta seção.'
-                    )
-                }
-
-                // agora, inserir a pergunta
-                const { error: perguntaError } = await supabase
+                const { error } = await supabase
                     .from('pergunta')
                     .insert({
-                        olhar_id: olhar.id,
+                        olhar_id: olharId,
                         descricao
                     })
 
-                if (perguntaError) {
-                    console.error(perguntaError)
+                if (error) {
+                    console.error(error)
                     throw new Error(
                         'Não foi possível enviar sua questão.'
                     )
@@ -116,10 +103,7 @@ const { olharCodigo } = Astro.props
             }
             catch(error) {
                 console.error(error)
-                const mensagemErro = error instanceof Error
-                    ? error.message
-                    : 'Ocorreu um erro ao enviar sua questão'
-                mostrarMensagem(mensagemErro, 'erro')
+                mostrarMensagem('Ocorreu um erro ao enviar sua questão', 'erro')
             }
             finally {
                 button.disabled = false
